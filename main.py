@@ -1,17 +1,29 @@
 from fastapi import FastAPI
 from fastapi.params import Body
+from pydantic import BaseModel
+from typing import Optional
 
 app = FastAPI()
 
-@app.get('/')
+
+class Post(BaseModel):
+    title: str
+    content: str
+    published: bool = True
+    ratings: Optional[int] = None
+
+
+@app.get("/")
 async def root():
-    return {'message': "Hello, world!"}
+    return {"message": "Hello, world!"}
 
 
 @app.get("/models/{item_id}")
 async def read_item(item_id: int):
     return {"model_id": item_id}
 
-@app.post('/createpost')
-async def create_post(payload: dict = Body(...)):
-    return {'message': f'title: {payload["title"]} and content: {payload["content"]}'}
+
+@app.post("/posts")
+async def create_post(post: Post):
+    print(post.dict())
+    return {"data": post}
